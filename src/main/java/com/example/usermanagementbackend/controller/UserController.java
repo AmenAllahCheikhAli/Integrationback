@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -227,5 +228,31 @@ public class UserController {
     public ResponseEntity<String> ping() {
         return ResponseEntity.ok("API OK");
     }
+
+    @PostMapping("/{userId}/participer/{evenementId}")
+    public ResponseEntity<Map<String, String>> participerEvenement(@PathVariable Long userId, @PathVariable Long evenementId) {
+        try {
+            userService.participerEvenement(userId, evenementId);
+            return ResponseEntity.ok(Map.of("message", "Participation enregistrée avec succès."));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", ex.getMessage()));
+        }
+    }
+
+
+    @PostMapping("/{userId}/annuler-participation/{evenementId}")
+    public ResponseEntity<Map<String, String>> annulerParticipation(
+            @PathVariable Long userId,
+            @PathVariable Long evenementId) {
+        try {
+            userService.annulerParticipation(userId, evenementId);
+            return ResponseEntity.ok(Map.of("message", "Participation annulée avec succès."));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+        }
+    }
+
+
 }
 

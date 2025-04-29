@@ -46,7 +46,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/stock/**").permitAll()
                 .requestMatchers("/api/recommendations/**").permitAll()
                 // All other requests must be authenticated
-
+                .requestMatchers("/api/categories/**").permitAll()
+                .requestMatchers("/api/evenements/**").permitAll()
                 .requestMatchers("/api/commandes/**").permitAll()
                 .requestMatchers("/api/factures/**").permitAll()
                 .requestMatchers("/api/transactions/**").permitAll()

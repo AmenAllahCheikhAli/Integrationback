@@ -18,11 +18,16 @@ public class RestControllerDon {
 
     @PostMapping
     public Don addDon(@RequestBody Don don) {
+        don.setId(null);
+        System.out.println("Received Don object: " + don.getId());
+
+
         return donService.addDon(don);
     }
 
     @PutMapping("/{id}")
     public Don updateDon(@PathVariable Long id, @RequestBody Don don) {
+
         return donService.updateDon(id, don);
     }
 

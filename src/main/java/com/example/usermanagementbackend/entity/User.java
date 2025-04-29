@@ -1,16 +1,20 @@
 package com.example.usermanagementbackend.entity;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import com.example.usermanagementbackend.entity.Evenement;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"evenementsParticipes","hibernateLazyInitializer", "handler"})
 @Table(name = "users")
 public class User {
 
@@ -20,6 +24,11 @@ public class User {
 
     @Column(columnDefinition = "TEXT")
     private String faceDescriptor;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "participations",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "evenement_id"))
+    private Set<Evenement> evenementsParticipes = new HashSet<>();
 
     private String nom;
     private String prenom;
@@ -38,13 +47,6 @@ public class User {
     private int nombreBlocages = 0;
     private LocalDate dateOfBirth;
     private Double creditLimit;
-
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonIgnore
-    @JsonIgnoreProperties("user") // Prevent circular reference
-    private List<Commande> commandes = new ArrayList<>();
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Fidelite fidelite;
 
@@ -62,7 +64,6 @@ public class User {
         this.role = role;
         this.adresseLivraison = adresseLivraison;
         this.creditLimit = creditLimit;
-
     }
 
     public Long getId() {
@@ -70,12 +71,6 @@ public class User {
     }
     public void setId(Long id) {
         this.id = id;
-    }
-    public Double getCreditLimit() {
-        return creditLimit;
-    }
-    public void setCreditLimit(Double creditLimit) {
-        this.creditLimit = creditLimit;
     }
 
     public String getNom() {
@@ -105,7 +100,12 @@ public class User {
     public void setMotDePasse(String motDePasse) {
         this.motDePasse = motDePasse;
     }
-
+    public Double getCreditLimit() {
+        return creditLimit;
+    }
+    public void setCreditLimit(Double creditLimit) {
+        this.creditLimit = creditLimit;
+    }
     public String getNumeroDeTelephone() {
         return numeroDeTelephone;
     }
@@ -220,6 +220,12 @@ public class User {
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
+    public Set<Evenement> getEvenementsParticipes() {
+        return evenementsParticipes;
+    }
 
+    public void setEvenementsParticipes(Set<Evenement> evenementsParticipes) {
+        this.evenementsParticipes = evenementsParticipes;
+    }
 
 }

@@ -1,5 +1,7 @@
 package com.example.usermanagementbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +29,8 @@ public class Reclamation {
     private byte[] imageData;
 
     @ManyToOne
+
     @JoinColumn(name = "don_id", nullable = true) // Allow null
+    @JsonIgnore
     private Don don;
 }

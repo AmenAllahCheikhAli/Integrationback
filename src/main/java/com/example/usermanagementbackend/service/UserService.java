@@ -1,10 +1,12 @@
 package com.example.usermanagementbackend.service;
 
 import com.example.usermanagementbackend.dto.UserDTO;
+import com.example.usermanagementbackend.entity.Evenement;
 import com.example.usermanagementbackend.entity.Fidelite;
 import com.example.usermanagementbackend.entity.Livreur;
 import com.example.usermanagementbackend.entity.User;
 import com.example.usermanagementbackend.mapper.UserMapper;
+import com.example.usermanagementbackend.repository.EvenementRepository;
 import com.example.usermanagementbackend.repository.LivreurRepository;
 import com.example.usermanagementbackend.repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -20,10 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -45,6 +44,8 @@ public class UserService {
 
     @Autowired
     private FideliteService fideliteService; // ✅ Inject FideliteService
+    @Autowired
+    private EvenementRepository evenementRepository;
 
     public UserDTO saveUser(UserDTO userDTO) {
         User user = UserMapper.toEntity(userDTO);
@@ -275,4 +276,47 @@ public class UserService {
 
         return stats;
     }
+
+    @Transactional
+    public void participerEvenement(Long userId, Long evenementId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        Evenement evenement = evenementRepository.findById(evenementId)
+                .orElseThrow(() -> new RuntimeException("Événement introuvable"));
+
+        if (evenement.getCapaciteMax() <= 0) {
+            throw new RuntimeException("L'événement est complet !");
+        }
+
+        if (user.getEvenementsParticipes().add(evenement)) {
+            evenement.setCapaciteMax(evenement.getCapaciteMax() - 1);
+            userRepository.save(user);
+            evenementRepository.save(evenement);
+        }
+    }
+
+    @Transactional
+    public void annulerParticipation(Long userId, Long evenementId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        Evenement evenement = evenementRepository.findById(evenementId)
+                .orElseThrow(() -> new RuntimeException("Événement introuvable"));
+
+        if (!user.getEvenementsParticipes().contains(evenement)) {
+            throw new RuntimeException("L'utilisateur n'est pas inscrit à cet événement");
+        }
+
+        user.getEvenementsParticipes().remove(evenement);
+        evenement.getParticipants().remove(user); // Important aussi côté événement !!
+
+        evenement.setCapaciteMax(evenement.getCapaciteMax() + 1); // Libérer une place
+
+        userRepository.save(user);
+        evenementRepository.save(evenement);
+    }
+
+
+
+    // dans UserService
+
 }
