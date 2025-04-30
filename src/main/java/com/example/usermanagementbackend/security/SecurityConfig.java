@@ -58,7 +58,6 @@ public class SecurityConfig {
                 .requestMatchers("/don/{*}").permitAll()
                 .requestMatchers("/reclamation/**").permitAll()
                 .requestMatchers("/reclamation/**").permitAll()
-                .requestMatchers("/import").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();

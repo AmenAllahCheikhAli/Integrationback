@@ -20,4 +20,7 @@ public interface IPromotionService {
     List<Produit> getProduitsProchesExpiration();
     // Nouvelle méthode pour récupérer les promotions dynamiques
     Map<String, List<Map<String, Object>>> getDynamicPromotions();
+    Promotion toggleActiveStatus(Integer id, boolean active);
+    void appliquerPromotionSurProduit(Produit produit, Promotion promo);
+    void verifierPromotionsActives();
 }

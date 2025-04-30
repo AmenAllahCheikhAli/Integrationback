@@ -1,13 +1,7 @@
 package com.example.usermanagementbackend.entity;
-import com.opencsv.bean.CsvBindByName;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
-@Entity
 
 public class Organization {
     private String name;
-    @Id
     private Long id;
     private String phone;
     private String email;
@@ -28,6 +22,4 @@ public class Organization {
     public void setPhone(String phone) { this.phone = phone; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-
-
 }
